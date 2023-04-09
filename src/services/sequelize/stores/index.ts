@@ -8,7 +8,7 @@ import { NotFoundError } from '../../../errors/not-found-error';
 import { DefaultResponse } from './interfaces/store.response';
 
 export const getAllStores = async (req: Request) => {
-  const { limit, page, keyword = '' } = req.query;
+  const { limit, page, keyword = '', sort } = req.query;
 
   let condition: any = {};
   if (keyword !== '') {
@@ -66,7 +66,7 @@ export const createStore = async (req: Request) => {
   return { data: response };
 };
 
-export const getOnoStoreEbook = async (req: Request) => {
+export const getOnoStore = async (req: Request) => {
   const { id } = req.params;
 
   const result = await Store.findOne({
@@ -140,4 +140,11 @@ export const deleteStore = async (req: Request) => {
   };
 
   return { data: response };
+};
+
+export const checkingStore = async (id: string) => {
+  const result = await Store.findOne({ where: { id } });
+
+  if (!result) throw new NotFoundError('STORE_NOT_FOUND');
+  return { data: result };
 };

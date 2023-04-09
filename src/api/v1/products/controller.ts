@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
 import {
-  getAllStores,
-  createStore,
-  getOnoStore,
-  updateStore,
-  deleteStore,
-} from '../../../services/sequelize/stores';
+  getAllProducts,
+  createProduct,
+  getOnoProduct,
+  updateProduct,
+  deleteProduct,
+} from '../../../services/sequelize/products';
 
 export const getAll = async (
   req: Request,
@@ -13,9 +13,10 @@ export const getAll = async (
   next: NextFunction
 ) => {
   try {
-    const result = await getAllStores(req);
+    const result = await getAllProducts(req);
     res.status(200).json(result);
   } catch (err) {
+    console.log(err);
     next(err);
   }
 };
@@ -26,7 +27,7 @@ export const create = async (
   next: NextFunction
 ) => {
   try {
-    const result = await createStore(req);
+    const result = await createProduct(req);
     res.status(201).json(result);
   } catch (err) {
     next(err);
@@ -35,7 +36,7 @@ export const create = async (
 
 export const find = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await getOnoStore(req);
+    const result = await getOnoProduct(req);
     res.status(200).json(result);
   } catch (err) {
     next(err);
@@ -48,7 +49,7 @@ export const update = async (
   next: NextFunction
 ) => {
   try {
-    const result = await updateStore(req);
+    const result = await updateProduct(req);
     res.status(200).json(result);
   } catch (err) {
     next(err);
@@ -61,7 +62,7 @@ export const destroy = async (
   next: NextFunction
 ) => {
   try {
-    const result = await deleteStore(req);
+    const result = await deleteProduct(req);
     res.status(200).json(result);
   } catch (err) {
     next(err);

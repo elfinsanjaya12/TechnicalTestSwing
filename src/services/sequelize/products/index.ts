@@ -1,108 +1,130 @@
-// import { Request } from 'express';
-// import { Op } from 'sequelize';
-// import { Category } from '../../../database/models';
-// import { formulaPaginationOffsetLimit } from '../../../utils/formula-pagination-offset-limit';
-// import { FormatPagination } from '../../../utils/format-pagination';
-// import { DefaultResponse } from './interfaces/category.response';
-// import { CategoryDTO } from './interfaces/category.dto';
-// import { NotFoundError } from '../../../errors/not-found-error';
+import { Request } from 'express';
+import { Op } from 'sequelize';
+import { Product } from '../../../database/models';
+import { formulaPaginationOffsetLimit } from '../../../utils/formula-pagination-offset-limit';
+import { FormatPagination } from '../../../utils/format-pagination';
+import { ProductDTO, ProductQueryDTO } from './interfaces/product.dto';
+import { NotFoundError } from '../../../errors/not-found-error';
+import { DefaultResponse } from './interfaces/product.response';
+import { checkingStore } from '../stores';
 
-// export const getAllCategories = async (req: Request) => {
-//   const { limit, page, keyword = '' } = req.query;
+export const getAllProducts = async (req: Request) => {
+  const { limit, page, keyword = '' }: ProductQueryDTO = req.query;
 
-//   let condition: any = {};
-//   if (keyword !== '') {
-//     condition = { ...condition, name: { [Op.like]: `%${keyword}%` } };
-//   }
+  let condition: any = {};
+  if (keyword !== '') {
+    condition = { ...condition, title: { [Op.like]: `%${keyword}%` } };
+  }
 
-//   const { offset, limitData } = formulaPaginationOffsetLimit(page, limit);
+  const { offset, limitData } = formulaPaginationOffsetLimit(page, limit);
 
-//   const count = await Category.count({ where: condition });
+  const count = await Product.count({ where: condition });
 
-//   const result = await Category.findAll({
-//     where: condition,
-//     attributes: ['id', 'name', 'createdAt'],
-//     order: [['createdAt', 'DESC']],
-//     limit: Number(limitData),
-//     offset: offset,
-//   });
+  const result: any = await Product.findAll({
+    where: condition,
 
-//   const { pages, total } = FormatPagination(count, limitData);
-//   return { data: result, total, pages };
-// };
+    limit: Number(limitData),
+    offset: offset,
+  });
 
-// export const createCategory = async (req: Request) => {
-//   const { name }: CategoryDTO = req.body;
+  const { pages, total } = FormatPagination(count, limitData);
+  return { data: result, total, pages };
+};
 
-//   const chekcingName = await Category.findOne({
-//     where: { name },
-//   });
+export const createProduct = async (req: Request) => {
+  const { title, url, price, description, storeId }: ProductDTO = req.body;
 
-//   if (chekcingName) throw new NotFoundError('DUPLICATE_NAME');
+  const findProduct = await Product.findOne({ where: { title } });
 
-//   const result = await Category.create({ name, status: 'Y' });
+  if (findProduct) throw new NotFoundError('DUPLICATE_TITLE');
 
-//   const response: DefaultResponse = {
-//     id: result.id,
-//     name: result.name,
-//   };
+  await checkingStore(storeId);
 
-//   return { data: response };
-// };
+  const result = await Product.create({
+    title,
+    url,
+    price,
+    description,
+    storeId,
+  });
 
-// export const getOneCategory = async (req: Request) => {
-//   const { id } = req.params;
+  const response: DefaultResponse = {
+    id: result.id,
+    url: result.url,
+    price: result.price,
+    title: result.title,
+    description: result.description,
+    storeId: result.storeId,
+  };
 
-//   const result = await Category.findOne({ where: { id } });
+  return { data: response };
+};
 
-//   if (!result) throw new NotFoundError('CATEGORY_NOT_FOUND');
-//   return { data: result };
-// };
+export const getOnoProduct = async (req: Request) => {
+  const { id } = req.params;
 
-// export const updateCategory = async (req: Request) => {
-//   const { id } = req.params;
-//   const checkingCategory = await Category.findOne({ where: { id } });
+  const result = await Product.findOne({
+    where: { id },
+  });
 
-//   if (!checkingCategory) throw new NotFoundError('CATEGORY_NOT_FOUND');
+  if (!result) throw new NotFoundError('PRODUCT_NOT_FOUND');
+  return { data: result };
+};
 
-//   const { name }: CategoryDTO = req.body;
+export const updateProduct = async (req: Request) => {
+  const { id } = req.params;
+  const findProduct = await Product.findOne({ where: { id } });
 
-//   const checkingCategoryName = await Category.findOne({
-//     where: { name, id: { [Op.ne]: id } },
-//   });
+  if (!findProduct) throw new NotFoundError('PRODUCT_NOT_FOUND');
 
-//   if (checkingCategoryName) throw new NotFoundError('DUPLICATE_NAME');
+  const { title, url, price, description, storeId }: ProductDTO = req.body;
 
-//   checkingCategory.name = name;
-//   await checkingCategory.save();
+  const checkingProduct = await Product.findOne({
+    where: { title, id: { [Op.ne]: id } },
+  });
 
-//   const response: DefaultResponse = { id, name: name || checkingCategory.name };
+  if (checkingProduct) throw new NotFoundError('DUPLICATE_TITLE');
 
-//   return { data: response };
-// };
+  await checkingStore(storeId);
 
-// export const deleteCategory = async (req: Request) => {
-//   const { id } = req.params;
+  findProduct.url = url;
+  findProduct.title = title;
+  findProduct.price = price;
+  findProduct.description = description;
+  findProduct.storeId = storeId;
+  await findProduct.save();
 
-//   const checkingCategory = await Category.findOne({
-//     where: { id },
-//   });
+  const response: DefaultResponse = {
+    id: findProduct.id,
+    url: findProduct.url,
+    price: findProduct.price,
+    title: findProduct.title,
+    description: findProduct.description,
+    storeId: findProduct.storeId,
+  };
 
-//   if (!checkingCategory) throw new NotFoundError('CATEGORY_NOT_FOUND');
+  return { data: response };
+};
 
-//   await checkingCategory.destroy();
+export const deleteProduct = async (req: Request) => {
+  const { id } = req.params;
 
-//   const response: DefaultResponse = {
-//     id: id,
-//     name: checkingCategory.name,
-//   };
+  const findProduct = await Product.findOne({
+    where: { id },
+  });
 
-//   return { data: response };
-// };
+  if (!findProduct) throw new NotFoundError('STORE_NOT_FOUND');
 
-// export const checkingCategory = async (id: string) => {
-//   const result = await Category.findOne({ where: { id } });
+  await findProduct.destroy();
 
-//   if (!result) throw new NotFoundError('CATEGORY_NOT_FOUND');
-//   return { data: result };
-// };
+  const response: DefaultResponse = {
+    id: findProduct.id,
+    url: findProduct.url,
+    price: findProduct.price,
+    title: findProduct.title,
+    description: findProduct.description,
+    storeId: findProduct.storeId,
+  };
+
+  return { data: response };
+};

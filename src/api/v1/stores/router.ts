@@ -9,10 +9,10 @@ import {
 } from './validation';
 
 const router = Router();
-router.get('/', getAllStoresValidation, getAll);
-router.get('/:id', checkingStoreIdValidation, find);
+router.get('/', getAllStoresValidation, validateRequest, getAll);
+router.get('/:id', checkingStoreIdValidation, validateRequest, find);
 router.post('/', createStoresValidation, validateRequest, create);
-router.put('/:id', updateStoresValidation, update);
-router.delete('/:id', checkingStoreIdValidation, destroy);
+router.put('/:id', updateStoresValidation, validateRequest, update);
+router.delete('/:id', checkingStoreIdValidation, validateRequest, destroy);
 
 export { router as storesRouter };

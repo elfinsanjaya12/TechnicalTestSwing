@@ -11,13 +11,11 @@ import { Store } from './store';
 
 interface ProductAttributes {
   id: string;
-  file: string;
+  url: string;
   title: string;
-  level: string;
-  reviews?: string;
-  typeCourseId: string;
-  categoryId: string;
-  status: string;
+  description: string;
+  price: number;
+  storeId: string;
 }
 
 interface ProductCreationAttributes extends Optional<ProductAttributes, 'id'> {}
@@ -37,19 +35,16 @@ export class Product extends Model<
   id!: string;
 
   @Column({ type: DataTypes.STRING })
-  file!: string;
+  url!: string;
 
   @Column({ type: DataTypes.STRING })
   title!: string;
 
   @Column({ type: DataTypes.STRING })
-  level!: string;
+  description!: string;
 
-  @Column({ type: DataTypes.STRING })
-  reviews!: string;
-
-  @Column({ type: DataTypes.STRING })
-  status!: string;
+  @Column({ type: DataTypes.FLOAT })
+  price!: number;
 
   // relation
   @ForeignKey(() => Store)
