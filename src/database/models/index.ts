@@ -9,7 +9,6 @@ import {
 
 import { Store } from './store';
 import { Product } from './product';
-import { Upload } from './upload';
 
 export const sequelize = new Sequelize({
   host: DB_HOST,
@@ -20,11 +19,11 @@ export const sequelize = new Sequelize({
   logging: false,
 });
 
-sequelize.addModels([Product, Store, Upload]);
+sequelize.addModels([Product, Store]);
 
 export const initDB = async () => {
   await sequelize.authenticate();
   await sequelize.sync({ force: false });
 };
 
-export { Product, Store, Upload };
+export { Product, Store };

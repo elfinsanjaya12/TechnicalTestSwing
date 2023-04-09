@@ -7,8 +7,8 @@ interface StoreAttributes {
   url: string;
   address: string;
   phone: string;
-  operational_time_start: string;
-  operational_time_end: string;
+  operationalTimeStart: number;
+  operationalTimeEnd: number;
 }
 
 interface StoreCreationAttributes extends Optional<StoreAttributes, 'id'> {}
@@ -28,5 +28,17 @@ export class Store extends Model<StoreAttributes, StoreCreationAttributes> {
   name!: string;
 
   @Column({ type: DataTypes.STRING })
-  status!: string;
+  url!: string;
+
+  @Column({ type: DataTypes.STRING })
+  address!: string;
+
+  @Column({ type: DataTypes.STRING })
+  phone!: string;
+
+  @Column({ type: DataTypes.INTEGER })
+  operationalTimeStart!: number;
+
+  @Column({ type: DataTypes.INTEGER })
+  operationalTimeEnd!: number;
 }
