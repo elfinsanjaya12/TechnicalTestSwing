@@ -1,37 +1,17 @@
-Databases:
+## Technical Test Swing
 
-# store
+### Documention APi
 
-- id [uuid | integer]
-- name [string]
-- url [string]
-- address [string]
-- phone [string]
-- operational_time_start [number]
-- operational_time_end [number]
+```
+https://documenter.getpostman.com/view/2945224/2s93XsYmHn
+```
 
-# products
+### Feature
 
-- id [uuid | integer]
-- title [string]
-- url [string]
-- price [float]
-- description [text]
-- store_id [uuid | integer] // relation
-
-Expectation:
-
-- create api with this database using Typescript or Golang
+- Upload Image
+- Crud Store
+- Crud Product
 - create advance filter from product table
-  -- price [asc|desc]
-  -- name [asc|desc]
-  -- search by name
-  Assessment:
-- Quality code
-- Code tidiness
-- Logic handling
-
-# Push your product in your github repository and send to email:
-
-ari.getswing.app
-Good Luck!
+  - price [asc|desc]
+  - name [asc|desc]
+  - search by name
