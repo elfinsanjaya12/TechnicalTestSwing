@@ -9,12 +9,22 @@ import { DefaultResponse } from './interfaces/product.response';
 import { checkingStore } from '../stores';
 
 export const getAllProducts = async (req: Request) => {
-  const { limit, page, keyword = '' }: ProductQueryDTO = req.query;
+  const {
+    limit,
+    page,
+    keyword = '',
+    sortOrder = [],
+  }: ProductQueryDTO = req.query;
 
   let condition: any = {};
   if (keyword !== '') {
     condition = { ...condition, title: { [Op.like]: `%${keyword}%` } };
   }
+
+  let convertSortOrder: any = [];
+  sortOrder.forEach((sO: any) => {
+    convertSortOrder.push([sO.split(' ')[0], sO.split(' ')[1]]);
+  });
 
   const { offset, limitData } = formulaPaginationOffsetLimit(page, limit);
 
@@ -22,7 +32,7 @@ export const getAllProducts = async (req: Request) => {
 
   const result: any = await Product.findAll({
     where: condition,
-
+    order: convertSortOrder,
     limit: Number(limitData),
     offset: offset,
   });

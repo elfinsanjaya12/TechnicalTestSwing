@@ -11,5 +11,5 @@ export interface ProductQueryDTO {
   page?: number;
   limit?: number;
   keyword?: string | null;
-  sort?: any;
+  sortOrder?: any;
 }
